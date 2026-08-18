@@ -40,25 +40,43 @@ if fi.exists():
 
 st.divider()
 st.header("Live Behavioural Event Scoring")
-meta=json.loads((MODEL/f"{dataset}_metadata.json").read_text())
-pre=joblib.load(MODEL/f"{dataset}_preprocessor.joblib")
-rf=joblib.load(MODEL/f"{dataset}_rf.joblib")
-gb=joblib.load(MODEL/f"{dataset}_gb.joblib")
-iso=joblib.load(MODEL/f"{dataset}_iso.joblib")
-ae=joblib.load(MODEL/f"{dataset}_ae.joblib")
+live_files=[
+    MODEL/f"{dataset}_metadata.json",
+    MODEL/f"{dataset}_preprocessor.joblib",
+    MODEL/f"{dataset}_rf.joblib",
+    MODEL/f"{dataset}_gb.joblib",
+    MODEL/f"{dataset}_iso.joblib",
+    MODEL/f"{dataset}_ae.joblib",
+]
+missing=[p.name for p in live_files if not p.exists()]
+if missing:
+    st.info(
+        f"Live scoring is not available for the **{dataset}** dataset because the "
+        f"following model artifacts are missing: `{', '.join(missing)}`. "
+        f"Run `python train.py --data data/events.csv --target label --dataset {dataset}` "
+        f"to generate the full model bundle, or switch to a dataset that has pre-trained "
+        f"scoring artifacts (e.g. STUDY)."
+    )
+else:
+    meta=json.loads(live_files[0].read_text())
+    pre=joblib.load(live_files[1])
+    rf=joblib.load(live_files[2])
+    gb=joblib.load(live_files[3])
+    iso=joblib.load(live_files[4])
+    ae=joblib.load(live_files[5])
 
-event={}
-cols=st.columns(3)
-for i,f in enumerate(meta["features"]):
-    event[f]=cols[i%3].number_input(f,value=0.0)
-if st.button("Analyse Event",type="primary"):
-    x=pre.transform(pd.DataFrame([event])); xd=x.toarray() if hasattr(x,"toarray") else x
-    rs=rf.predict_proba(x)[:,1][0]; gs=gb.predict_proba(xd)[:,1][0]
-    ir=float(-iso.decision_function(x)[0]); iscore=1/(1+np.exp(-5*ir))
-    er=float(np.mean((xd-ae.predict(xd))**2)); ascore=1/(1+np.exp(-5*er))
-    risk=.40*rs+.35*gs+.15*iscore+.10*ascore
-    st.metric("Ensemble Risk Score",f"{risk:.3f}")
-    if risk>=meta["threshold"]:
-        st.error("ANOMALOUS — send event to the approved security-review workflow.")
-    else:
-        st.success("NORMAL — no anomaly flagged at the configured threshold.")
+    event={}
+    cols=st.columns(3)
+    for i,f in enumerate(meta["features"]):
+        event[f]=cols[i%3].number_input(f,value=0.0)
+    if st.button("Analyse Event",type="primary"):
+        x=pre.transform(pd.DataFrame([event])); xd=x.toarray() if hasattr(x,"toarray") else x
+        rs=rf.predict_proba(x)[:,1][0]; gs=gb.predict_proba(xd)[:,1][0]
+        ir=float(-iso.decision_function(x)[0]); iscore=1/(1+np.exp(-5*ir))
+        er=float(np.mean((xd-ae.predict(xd))**2)); ascore=1/(1+np.exp(-5*er))
+        risk=.40*rs+.35*gs+.15*iscore+.10*ascore
+        st.metric("Ensemble Risk Score",f"{risk:.3f}")
+        if risk>=meta["threshold"]:
+            st.error("ANOMALOUS — send event to the approved security-review workflow.")
+        else:
+            st.success("NORMAL — no anomaly flagged at the configured threshold.")
