@@ -1,0 +1,29 @@
+CHAPTER FOUR PYTHON RUN REPORT
+
+Dataset used:
+The previously generated study event dataset (20 observations, 10 normal and
+10 anomalous records) was used as the working research dataset.
+
+Pipeline:
+Preprocessing -> train/test split -> SMOTE on training data -> Rule-based
+baseline -> Isolation Forest -> Autoencoder reconstruction detector ->
+Random Forest -> Gradient Boosted Decision Tree -> Proposed Ensemble.
+
+Test set:
+20% stratified holdout = 4 observations (2 normal, 2 anomalous).
+
+Cross-validation:
+Five-fold stratified cross-validation was used for the supplied 20-row dataset.
+Ten-fold CV is not statistically feasible with this dataset because each class
+has too few observations for 10 stratified folds. The thesis should therefore
+not report 10-fold CV for this particular small working dataset.
+
+Key results:
+Autoencoder, Random Forest, Gradient Boosted Decision Tree and Proposed
+Ensemble achieved 100% accuracy, precision, recall, F1 and ROC-AUC on the
+holdout set, with zero false positives and zero false negatives.
+The Rule-based baseline and Isolation Forest achieved 75% accuracy and F1 =
+0.667, with one false negative and zero false positives.
+
+See STUDY_performance.csv, STUDY_cv.csv and STUDY_feature_importance.csv for
+the exact machine-generated tables.

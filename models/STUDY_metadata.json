@@ -1,0 +1,19 @@
+{
+  "dataset": "STUDY",
+  "target": "label",
+  "features": [
+    "login_hour",
+    "access_frequency",
+    "privileged_commands",
+    "device_consistency",
+    "location_consistency",
+    "session_duration"
+  ],
+  "ensemble_weights": {
+    "rf": 0.4,
+    "gb": 0.35,
+    "iso": 0.15,
+    "ae": 0.1
+  },
+  "threshold": 0.5
+}

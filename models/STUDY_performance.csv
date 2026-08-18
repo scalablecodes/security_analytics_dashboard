@@ -1,0 +1,7 @@
+dataset,model,accuracy,precision,recall,f1,fpr,roc_auc,tn,fp,fn,tp
+STUDY,Rule-based baseline,0.75,1.0,0.5,0.6666666666666666,0.0,1.0,2,0,1,1
+STUDY,Isolation Forest,0.75,1.0,0.5,0.6666666666666666,0.0,1.0,2,0,1,1
+STUDY,Autoencoder,1.0,1.0,1.0,1.0,0.0,1.0,2,0,0,2
+STUDY,Random Forest,1.0,1.0,1.0,1.0,0.0,1.0,2,0,0,2
+STUDY,Gradient Boosted Decision Tree,1.0,1.0,1.0,1.0,0.0,1.0,2,0,0,2
+STUDY,Proposed Ensemble,1.0,1.0,1.0,1.0,0.0,1.0,2,0,0,2

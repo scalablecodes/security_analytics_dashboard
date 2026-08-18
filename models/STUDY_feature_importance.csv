@@ -1,0 +1,7 @@
+feature,importance
+numeric__login_hour,0.0
+numeric__access_frequency,0.0
+numeric__privileged_commands,0.0
+numeric__device_consistency,0.0
+numeric__location_consistency,0.0
+numeric__session_duration,0.0

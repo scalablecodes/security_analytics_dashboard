@@ -1,0 +1,7 @@
+dataset,model,accuracy,precision,recall,f1,fpr,roc_auc,tn,fp,fn,tp
+CERT,Rule-based baseline,0.75,1.0,0.5,0.6666666666666666,0.0,1.0,2,0,1,1
+CERT,Isolation Forest,0.75,1.0,0.5,0.6666666666666666,0.0,1.0,2,0,1,1
+CERT,Autoencoder,1.0,1.0,1.0,1.0,0.0,1.0,2,0,0,2
+CERT,Random Forest,1.0,1.0,1.0,1.0,0.0,1.0,2,0,0,2
+CERT,Gradient Boosted Decision Tree,1.0,1.0,1.0,1.0,0.0,1.0,2,0,0,2
+CERT,Proposed Ensemble,1.0,1.0,1.0,1.0,0.0,1.0,2,0,0,2
