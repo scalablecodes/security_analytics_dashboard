@@ -11,6 +11,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder,StandardScaler
 from sklearn.neural_network import MLPRegressor
 from sklearn.inspection import permutation_importance
+from scipy.stats import beta
 
 SEED=42
 BASE=Path(__file__).resolve().parent
@@ -38,14 +39,32 @@ def build_preprocessor(X):
                                  ("onehot",OneHotEncoder(handle_unknown="ignore"))]),cat)
     ])
 
+def clopper_pearson(k,n,alpha=.05):
+    """Exact binomial confidence interval for k successes in n trials.
+
+    Reported alongside every proportion because the hold-out partition here is very
+    small: a point estimate of 100% on n=4 is consistent with a true rate as low as
+    ~40%, and the interval is the honest summary of that.
+    """
+    if n==0: return (np.nan,np.nan)
+    lo=0.0 if k==0 else beta.ppf(alpha/2,k,n-k+1)
+    hi=1.0 if k==n else beta.ppf(1-alpha/2,k+1,n-k)
+    return (float(lo),float(hi))
+
 def calc(y,p,s):
     tn,fp,fn,tp=confusion_matrix(y,p,labels=[0,1]).ravel()
+    n=tn+fp+fn+tp
+    acc_lo,acc_hi=clopper_pearson(tn+tp,n)                       # accuracy
+    rec_lo,rec_hi=clopper_pearson(tp,tp+fn)                      # recall / sensitivity
     return {
       "accuracy":accuracy_score(y,p),"precision":precision_score(y,p,zero_division=0),
       "recall":recall_score(y,p,zero_division=0),"f1":f1_score(y,p,zero_division=0),
       "fpr":fp/(fp+tn) if fp+tn else 0,
       "roc_auc":roc_auc_score(y,s) if len(np.unique(y))==2 else np.nan,
-      "tn":int(tn),"fp":int(fp),"fn":int(fn),"tp":int(tp)
+      "tn":int(tn),"fp":int(fp),"fn":int(fn),"tp":int(tp),
+      "n_test":int(n),
+      "accuracy_ci_low":acc_lo,"accuracy_ci_high":acc_hi,
+      "recall_ci_low":rec_lo,"recall_ci_high":rec_hi
     }
 
 def main():
@@ -107,10 +126,14 @@ def main():
 
     joblib.dump(pre,MODEL/f"{args.dataset}_preprocessor.joblib")
     for n,m in {"rf":rf,"gb":gb,"iso":iso,"ae":ae}.items(): joblib.dump(m,MODEL/f"{args.dataset}_{n}.joblib")
+    # Median normal-class training event, used to pre-fill the dashboard scoring form.
+    demo=X.loc[ytr.index[ytr==0]].median().round(2).to_dict()
     (MODEL/f"{args.dataset}_metadata.json").write_text(json.dumps({
         "dataset":args.dataset,"target":args.target,"features":X.columns.tolist(),
         "ensemble_weights":{"rf":.40,"gb":.35,"iso":.15,"ae":.10},
-        "threshold":.50
+        "threshold":.50,
+        "n_train":int(len(ytr)),"n_test":int(len(yte)),
+        "demo_normal_event":demo
     },indent=2))
     print(pd.DataFrame(rows).to_string(index=False))
     print("Saved model artifacts to",MODEL)

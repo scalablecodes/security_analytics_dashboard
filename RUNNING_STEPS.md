@@ -14,7 +14,6 @@ UBA_Final_Run/
 ├── data/
 │   └── events.csv              # Sample behavioural events dataset
 ├── models/                     # Pre-trained models and artifacts
-│   ├── CERT_performance.csv
 │   ├── STUDY_ae.joblib         # Autoencoder model
 │   ├── STUDY_cv.csv
 │   ├── STUDY_feature_importance.csv
@@ -31,7 +30,7 @@ UBA_Final_Run/
 └── Chapter_Four_Run_Report.txt
 ```
 
-**Key insight**: The `models/` directory already contains pre-trained artifacts (`STUDY_*` and `CERT_*` files), so we can jump straight to running the dashboard without re-training.
+**Key insight**: The `models/` directory already contains the pre-trained `STUDY_*` artifacts, so we can jump straight to running the dashboard without re-training.
 
 ---
 
@@ -57,7 +56,7 @@ The project requires these Python packages:
 The README documents three commands:
 ```bash
 pip install -r requirements.txt
-python train.py --data data/events.csv --target label --dataset CERT
+python train.py --data data/events.csv --target label --dataset STUDY
 streamlit run dashboard.py
 ```
 
@@ -128,7 +127,7 @@ Before running, it's useful to understand what [dashboard.py](file:///Users/abra
 1. **Imports** (line 3): `json`, `pathlib`, `joblib`, `numpy`, `pandas`, `streamlit`, `plotly.express`
 2. **Page config** (line 6): Wide layout, title "UBA Security Analytics Dashboard"
 3. **Load performance CSVs** (lines 10-13): Looks for `*_performance.csv` in `models/`. If missing, warns and stops.
-4. **Dataset selector** (lines 15-17): Sidebar dropdown to switch between `STUDY` and `CERT` datasets.
+4. **Dataset selector** (lines 15-17): Sidebar dropdown listing every dataset with a `*_performance.csv` in `models/`. Only `STUDY` is present.
 5. **Best model metrics** (lines 19-22): 4-column KPIs — Best model name, Accuracy, F1, ROC-AUC.
 6. **Model Comparison chart** (lines 24-27): Interactive Plotly bar chart. Select metric from dropdown.
 7. **Confusion Matrix table** (lines 29-30): TN / FP / FN / TP per model.
@@ -200,8 +199,13 @@ Open any of these URLs in your web browser:
 ### 7.1 Select a Dataset
 
 From the **left sidebar**, choose:
-- `STUDY` — Uses the STUDY_* model files (pre-trained on research data)
-- `CERT` — Uses the CERT_* model files (pre-trained on CERT dataset)
+- `STUDY` — the synthetic 20-observation study dataset (`data/events.csv`), the only
+  dataset used in this project. Its full model bundle lives in `models/STUDY_*`.
+
+The CERT and LANL datasets were assessed for suitability (Chapter Three, Section 3.6)
+but were **not** used for model development or evaluation. An earlier run mislabelled
+the study results as "CERT"; that file has been moved to `archive/` with a provenance
+note and is not study output.
 
 ### 7.2 Explore Model Comparison
 
@@ -249,7 +253,7 @@ If you want to retrain on new data instead of using the pre-trained artifacts:
 
 ```bash
 cd /path/to/UBA_Final_Run
-python3 train.py --data data/events.csv --target label --dataset CERT
+python3 train.py --data data/events.csv --target label --dataset STUDY
 ```
 
 This will:
@@ -354,5 +358,5 @@ python3 -m streamlit run dashboard.py --server.headless true --server.port 8501
 
 # --- Optional: retrain models ---
 python3 train.py --data data/events.csv --target label --dataset STUDY
-python3 train.py --data data/events.csv --target label --dataset CERT
+python3 train.py --data data/events.csv --target label --dataset STUDY
 ```

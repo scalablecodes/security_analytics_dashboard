@@ -15,5 +15,15 @@
     "iso": 0.15,
     "ae": 0.1
   },
-  "threshold": 0.5
+  "threshold": 0.5,
+  "n_train": 16,
+  "n_test": 4,
+  "demo_normal_event": {
+    "login_hour": 12.5,
+    "access_frequency": 12.0,
+    "privileged_commands": 0.0,
+    "device_consistency": 1.0,
+    "location_consistency": 1.0,
+    "session_duration": 28.5
+  }
 }
