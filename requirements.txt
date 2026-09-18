@@ -1,11 +1,17 @@
-# Pinned to the exact versions the model artefacts in models/ were trained with.
-# The .joblib files are scikit-learn pickles and are not guaranteed to load under a
-# different scikit-learn or numpy version, so do not loosen these without retraining.
-pandas==2.3.3
-numpy==2.0.2
+# scikit-learn is pinned exactly: the .joblib files in models/ are scikit-learn pickles
+# trained under 1.6.1 and are not guaranteed to load under any other version.
 scikit-learn==1.6.1
 imbalanced-learn==0.12.4
 joblib==1.5.3
-scipy==1.13.1
+
+# numpy and scipy are ranged rather than pinned so the install works on every
+# Python from 3.9 to 3.13. The exact trained-with versions (numpy 2.0.2, scipy 1.13.1)
+# have no wheels for Python 3.13, which is what Streamlit Community Cloud defaults to;
+# pinning them there makes pip try to compile numpy from source and abort the install.
+# numpy keeps pickle compatibility within the 2.x series, so the models load either way.
+numpy>=2.0,<2.3
+scipy>=1.13,<1.16
+pandas>=2.2,<3
+
 streamlit==1.50.0
 plotly==6.9.0
