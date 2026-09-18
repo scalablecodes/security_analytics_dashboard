@@ -19,7 +19,7 @@ r=pd.read_csv(MODEL/f"{dataset}_performance.csv")
 st.info(
     "**Dataset provenance.** Results below are from the synthetic study dataset "
     "(20 observations; 4-observation hold-out test partition). It is a controlled "
-    "dataset generated to validate the pipeline end to end — not operational data "
+    "dataset generated to validate the pipeline end to end, not operational data "
     "from a financial institution. Metrics carry wide confidence intervals at this "
     "sample size and are reported with them below."
 )
@@ -34,7 +34,7 @@ c1,c2,c3,c4=st.columns(4)
 c1.metric("Best model",best.model,f"tied with {tied-1} other model(s)" if tied>1 else None,
           delta_color="off")
 c2.metric("Accuracy",f"{best.accuracy:.1%}",
-          f"95% CI {best.accuracy_ci_low:.0%}–{best.accuracy_ci_high:.0%}" if "accuracy_ci_low" in r else None,
+          f"95% CI {best.accuracy_ci_low:.0%} to {best.accuracy_ci_high:.0%}" if "accuracy_ci_low" in r else None,
           delta_color="off")
 c3.metric("F1-score",f"{best.f1:.1%}"); c4.metric("ROC-AUC",f"{best.roc_auc:.3f}")
 
@@ -60,7 +60,7 @@ if fi.exists():
         # never drops. Say so, rather than drawing an empty chart on an autoscaled axis.
         st.warning(
             "**Every permutation importance is exactly 0.0000, and that is the correct "
-            "result for this dataset — it is not a computation failure.**\n\n"
+            "result for this dataset, not a computation failure.**\n\n"
             "Permutation importance shuffles one feature and measures the resulting drop "
             "in F1. On this dataset five of the six behavioural features separate the two "
             "classes with no overlap at all, so removing any single feature leaves the "
@@ -120,9 +120,9 @@ else:
         risk=.40*rs+.35*gs+.15*iscore+.10*ascore
         st.metric("Ensemble Risk Score",f"{risk:.3f}")
         if risk>=meta["threshold"]:
-            st.error("ANOMALOUS — send event to the approved security-review workflow.")
+            st.error("ANOMALOUS. Send this event to the approved security-review workflow.")
         else:
-            st.success("NORMAL — no anomaly flagged at the configured threshold.")
+            st.success("NORMAL. No anomaly flagged at the configured threshold.")
 
 
 
