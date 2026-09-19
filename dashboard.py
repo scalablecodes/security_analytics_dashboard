@@ -117,7 +117,10 @@ else:
         rs=rf.predict_proba(x)[:,1][0]; gs=gb.predict_proba(xd)[:,1][0]
         ir=float(-iso.decision_function(x)[0]); iscore=1/(1+np.exp(-5*ir))
         er=float(np.mean((xd-ae.predict(xd))**2)); ascore=1/(1+np.exp(-5*er))
-        risk=.40*rs+.35*gs+.15*iscore+.10*ascore
+        # Weights come from the training metadata so the app can never drift from
+        # what train.py used (equal weighting, thesis section 4.5.1).
+        W=meta["ensemble_weights"]
+        risk=W["rf"]*rs+W["gb"]*gs+W["iso"]*iscore+W["ae"]*ascore
         st.metric("Ensemble Risk Score",f"{risk:.3f}")
         if risk>=meta["threshold"]:
             st.error("ANOMALOUS. Send this event to the approved security-review workflow.")

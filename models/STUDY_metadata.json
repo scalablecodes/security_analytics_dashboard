@@ -10,10 +10,10 @@
     "session_duration"
   ],
   "ensemble_weights": {
-    "rf": 0.4,
-    "gb": 0.35,
-    "iso": 0.15,
-    "ae": 0.1
+    "rf": 0.25,
+    "gb": 0.25,
+    "iso": 0.25,
+    "ae": 0.25
   },
   "threshold": 0.5,
   "n_train": 16,
