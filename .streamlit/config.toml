@@ -1,0 +1,7 @@
+[client]
+# Hide the developer toolbar (edit, GitHub, Deploy) for everyone, including the
+# signed-in owner, so nothing distracts on a projected screen during the defence.
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false
