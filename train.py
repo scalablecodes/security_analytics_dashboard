@@ -96,8 +96,10 @@ def main():
 
     # Rule baseline: fixed anomaly score threshold.
     rule_s=.5*iso_s+.5*ae_s
-    # Proposed ensemble.
-    ens_s=.40*rf_s+.35*gb_s+.15*iso_s+.10*ae_s
+    # Proposed ensemble: equally weighted average of the four normalised scores,
+    # as stated in thesis section 4.5.1. Weights are not tuned; see section 5.7.
+    W={"rf":.25,"gb":.25,"iso":.25,"ae":.25}
+    ens_s=W["rf"]*rf_s+W["gb"]*gb_s+W["iso"]*iso_s+W["ae"]*ae_s
 
     models=[
       ("Rule-based baseline",rule_s,(rule_s>=.80).astype(int)),
@@ -130,7 +132,7 @@ def main():
     demo=X.loc[ytr.index[ytr==0]].median().round(2).to_dict()
     (MODEL/f"{args.dataset}_metadata.json").write_text(json.dumps({
         "dataset":args.dataset,"target":args.target,"features":X.columns.tolist(),
-        "ensemble_weights":{"rf":.40,"gb":.35,"iso":.15,"ae":.10},
+        "ensemble_weights":W,
         "threshold":.50,
         "n_train":int(len(ytr)),"n_test":int(len(yte)),
         "demo_normal_event":demo
